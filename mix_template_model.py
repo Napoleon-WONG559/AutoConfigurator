@@ -83,7 +83,7 @@ class MixTemplateModel(nn.Module):
             classes = classes,
             label_words = label_words,
             tokenizer = tokenizer,
-            multi_token_handler="mean",
+            multi_token_handler="first",
         )
 
         self.promptModel = PromptForClassification(
