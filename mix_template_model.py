@@ -10,6 +10,7 @@ from openprompt import PromptDataLoader
 from transformers.tokenization_utils import PreTrainedTokenizer
 import torch.nn as nn
 from transformers import AdamW
+from torch.utils.data import random_split
 
 #graphic card classes and label words
 graphic_classes = [
@@ -41,10 +42,19 @@ def read_data_csv(file):
     for ind,sample in enumerate(record):
         sample.insert(0,ind)
         sample[2]=int(sample[2])
-    dataset_n=[]
-    for item in record:
-        dataset_n.append(InputExample(guid=item[0],text_a=item[1],label=item[2]))
-    return dataset_n
+    train_set, valid_set=random_split(record,
+                 [0.7,0.3],
+                 generator=torch.Generator().manual_seed(42))
+    dataset={}
+    train_dataset=[]
+    valid_dataset=[]
+    for item in train_set:
+        train_dataset.append(InputExample(guid=item[0],text_a=item[1],label=item[2]))
+    for item in valid_set:
+        valid_dataset.append(InputExample(guid=item[0],text_a=item[1],label=item[2]))
+    dataset['train']=train_dataset
+    dataset['valid']=valid_dataset
+    return dataset
 
 
 
@@ -83,8 +93,22 @@ class MixTemplateModel(nn.Module):
         )
         self.promptModel.to(device)
 
-        self.data_loader = PromptDataLoader(
-            dataset = dataset,
+        #train_set, valid_set=random_split(dataset,
+        #                                  [0.7,0.3],
+        #                                  generator=torch.Generator().manual_seed(42))
+        train_set=dataset['train']
+        valid_set=dataset['valid']
+
+        self.train_data_loader = PromptDataLoader(
+            dataset = train_set,
+            tokenizer = tokenizer,
+            template = self.promptTemplate,
+            tokenizer_wrapper_class=WrapperClass,
+            batch_size=5,
+            shuffle=True,
+        )
+        self.valid_data_loader = PromptDataLoader(
+            dataset = valid_set,
             tokenizer = tokenizer,
             template = self.promptTemplate,
             tokenizer_wrapper_class=WrapperClass,
@@ -114,6 +138,9 @@ class MixTemplateModel(nn.Module):
 
     def train(self):
         self.promptModel.train()
+
+    def eval(self):
+        self.promptModel.eval()
     
     def set_epoch(self,epoch):
         self.epoch=epoch
@@ -132,7 +159,10 @@ if __name__ == '__main__':
 
     #graphic model
     graphic_dataset=read_data_csv("data/review_graphic_label_map.csv")
-    graphic_epoch=3
+    #graphic_train_set, graphic_valid_set=random_split(graphic_dataset,
+    #                                                  [0.7,0.3],
+    #                                                  generator=torch.Generator().manual_seed(42))
+    graphic_epoch=5
     graphic_template='{"soft": "Someone said : "} {"placeholder":"text_a"} {"soft": "Then he need"} a computer with a {"mask"} graphic card'
     graphic_model=MixTemplateModel(graphic_plm,
                                    graphic_tokenizer,
@@ -147,7 +177,9 @@ if __name__ == '__main__':
     #-----------------------Train-------------------------
     graphic_model.train()
     for i in range(graphic_model.epoch):
-        for batch in graphic_model.data_loader:
+        count=0
+        loss_rec=0
+        for batch in graphic_model.train_data_loader:
             batch.to(device)
             graphic_labels=batch['label']
             graphic_logits=graphic_model(batch)
@@ -157,3 +189,20 @@ if __name__ == '__main__':
             graphic_model.optimizer1.zero_grad()
             graphic_model.optimizer2.step()
             graphic_model.optimizer2.zero_grad()
+            count+=1
+            loss_rec+=graphic_loss
+        print('NO.',i,' epoch avg loss: ',loss_rec/count)
+    
+    #-----------------------Validate-------------------------
+    graphic_model.eval()
+    preds=[]
+    labels=[]
+    for step, inputs in enumerate(graphic_model.valid_data_loader):
+        inputs.to(device)
+        graphic_logits=graphic_model(inputs)
+        graphic_label=inputs['label']
+        labels.extend(graphic_label.cpu().tolist())
+        preds.extend(torch.argmax(graphic_logits,dim=-1).cpu().tolist())
+    acc=sum([int(i==j) for i,j in zip(preds, labels)])/len(preds)
+
+    print("accuracy is : ",acc)
