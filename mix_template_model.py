@@ -27,7 +27,7 @@ graphic_label_words = {
     2: ['Intel UHD Graphics 620', 'Intel Iris Plus Graphics 640', 'NVIDIA GeForce 940MX'],
     3: ['Intel HD Graphics 3000', 'Intel', 'Intel HD 620 graphics', 'Intel HD Graphics 500', 'Intel HD Graphics 520', 'Intel HD Graphics 620', 'Intel HD Graphics 400', 'Intel Celeron', 'Intel HD Graphics 505', 'AMD Radeon R2', 'Intel HD Graphics 5500', 'Intel HD Graphics', 'Intel?? HD Graphics 620 (up to 2.07 GB)', 'intel 620'],
     4: ['Integrated', 'integrated intel hd graphics', 'integrated AMD Radeon R5 Graphics', 'Integrated Graphics', 'Integrated intel hd graphics'],
-    5: ['515', '4', 'FirePro W4190M', 'NONE', 'PC', 'na', 'AMD'],
+    5: ['others'],
 }
 
 
@@ -43,7 +43,7 @@ def read_data_csv(file):
         sample.insert(0,ind)
         sample[2]=int(sample[2])
     train_set, valid_set=random_split(record,
-                 [0.7,0.3],
+                 [0.9,0.1],
                  generator=torch.Generator().manual_seed(42))
     dataset={}
     train_dataset=[]
@@ -83,7 +83,8 @@ class MixTemplateModel(nn.Module):
             classes = classes,
             label_words = label_words,
             tokenizer = tokenizer,
-            multi_token_handler="first",
+            #multi_token_handler="first",
+            multi_token_handler="mean",
         )
 
         self.promptModel = PromptForClassification(
@@ -104,7 +105,7 @@ class MixTemplateModel(nn.Module):
             tokenizer = tokenizer,
             template = self.promptTemplate,
             tokenizer_wrapper_class=WrapperClass,
-            batch_size=5,
+            batch_size=8,
             shuffle=True,
         )
         self.valid_data_loader = PromptDataLoader(
@@ -112,7 +113,7 @@ class MixTemplateModel(nn.Module):
             tokenizer = tokenizer,
             template = self.promptTemplate,
             tokenizer_wrapper_class=WrapperClass,
-            batch_size=5,
+            batch_size=8,
         )
 
         self.cross_entropy  = nn.NLLLoss()
@@ -126,7 +127,7 @@ class MixTemplateModel(nn.Module):
         optimizer_grouped_parameters2 = [
             {'params': [p for n,p in self.promptModel.template.named_parameters() if "raw_embedding" not in n]}
         ]
-        self.optimizer1 = AdamW(optimizer_grouped_parameters1, lr=1e-4)
+        self.optimizer1 = AdamW(optimizer_grouped_parameters1, lr=1e-5)
         self.optimizer2 = AdamW(optimizer_grouped_parameters2, lr=1e-3)
 
         self.epoch=epoch
@@ -162,7 +163,7 @@ if __name__ == '__main__':
     #graphic_train_set, graphic_valid_set=random_split(graphic_dataset,
     #                                                  [0.7,0.3],
     #                                                  generator=torch.Generator().manual_seed(42))
-    graphic_epoch=5
+    graphic_epoch=10
     graphic_template='{"soft": "Someone said : "} {"placeholder":"text_a"} {"soft": "Then he need"} a computer with a {"mask"} graphic card'
     graphic_model=MixTemplateModel(graphic_plm,
                                    graphic_tokenizer,
