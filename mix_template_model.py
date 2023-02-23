@@ -32,7 +32,7 @@ graphic_label_words = {
 
 
 
-def read_data_csv(file):
+def read_data_csv(file, portion):
     record=[]
     with open(file,newline='') as csvfile:
         read=csv.reader(csvfile)
@@ -43,7 +43,7 @@ def read_data_csv(file):
         sample.insert(0,ind)
         sample[2]=int(sample[2])
     train_set, valid_set=random_split(record,
-                 [0.9,0.1],
+                 portion,
                  generator=torch.Generator().manual_seed(42))
     dataset={}
     train_dataset=[]
@@ -148,9 +148,7 @@ class MixTemplateModel(nn.Module):
 
 
 
-
-
-
+#__main__ function is abstracted as configurator class
 if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(device)
@@ -159,7 +157,7 @@ if __name__ == '__main__':
     graphic_plm, graphic_tokenizer, graphic_model_config, graphic_WrapperClass = load_plm("bert", "bert-base-cased")
 
     #graphic model
-    graphic_dataset=read_data_csv("data/review_graphic_label_map.csv")
+    graphic_dataset=read_data_csv("data/review_graphic_label_map.csv",[0.9,0.1])
     #graphic_train_set, graphic_valid_set=random_split(graphic_dataset,
     #                                                  [0.7,0.3],
     #                                                  generator=torch.Generator().manual_seed(42))
@@ -207,3 +205,7 @@ if __name__ == '__main__':
     acc=sum([int(i==j) for i,j in zip(preds, labels)])/len(preds)
 
     print("accuracy is : ",acc)
+
+    #-----------------------FineTune-------------------------
+
+    #-------------------------Test---------------------------
