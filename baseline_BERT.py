@@ -15,11 +15,11 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 #device = 'cpu'
 print(device)
 
-df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/MSc_ML_HA5/IMDB Dataset.csv")
+df = pd.read_csv("/kaggle/input/reviewgraphiclabel/review_graphic_label_map.csv")
 
 train_text, val_text, train_labels, val_labels = train_test_split(df['review'], df['graphicard_label'], 
                                                                     random_state=2018, 
-                                                                    test_size=0.3, 
+                                                                    test_size=0.9, 
                                                                     stratify=df['graphicard_label'])
 
 # import BERT-base pretrained model
@@ -106,8 +106,8 @@ class BERT_Arch(nn.Module):
         outputs = self.bert(sent_id)
 #         print(cls_hs)
 #         x = self.fc1(outputs.last_hidden_state)
-        #x = self.fc1(outputs.pooler_output)
-        x = self.fc1(outputs)
+        x = self.fc1(outputs.pooler_output)
+        #x = self.fc1(outputs)
         #x dim 512
         x = self.relu(x)
         x = self.dropout(x)
@@ -142,7 +142,14 @@ for i in range(epoch):
     count=0
     loss_rec=0
     for batch in train_dataloader:
+        #print(batch)
+        #batch=torch.stack(batch,dim=1)
+        batch = [r.to(device) for r in batch]
         inputs, labels=batch
+        #batch.to(device)
+        #inputs, labels=batch
+        #inputs.to(device)
+        #labels.to(device)
         logits=model(inputs)
         loss=cross_entropy(logits,labels)
         loss.backward()
@@ -156,8 +163,12 @@ model.eval()
 preds=[]
 labels=[]
 for batch in val_dataloader:
+    #batch=torch.stack(batch,dim=1)
+    #batch.to(device)
+    batch = [r.to(device) for r in batch]
     inputs, label=batch
-    inputs.to(device)
+    #inputs.to(device)
+    #labels.to(device)
     logits=model(inputs)
     labels.extend(label.cpu().tolist())
     preds.extend(torch.argmax(logits,dim=-1).cpu().tolist())
