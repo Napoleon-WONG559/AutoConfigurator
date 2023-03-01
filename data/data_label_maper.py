@@ -61,6 +61,7 @@ if __name__ == '__main__':
     #----------------------generate mapping file---------------------
 
     #graphic label mapping
+    """
     graphic_label={
         0:['NVIDIA GeForce GTX 1050', 'NVIDIA GeForce GTX 1050 Ti', 'GTX 1050 Ti', 'NVIDIA GeForce GTX 1060', 'NVIDIA GeForce GTX 1070', '4GB GDDR5 NVIDIA GeForce GTX 1050', 'GTX 1050'],
         1:['AMD Radeon R4', 'radeon r5', 'AMD Radeon R5 Graphics', 'AMD Radeon R7'],
@@ -68,6 +69,14 @@ if __name__ == '__main__':
         3:['Intel HD Graphics 3000', 'Intel', 'Intel HD 620 graphics', 'Intel HD Graphics 500', 'Intel HD Graphics 520', 'Intel HD Graphics 620', 'Intel HD Graphics 400', 'Intel Celeron', 'Intel HD Graphics 505', 'AMD Radeon R2', 'Intel HD Graphics 5500', 'Intel HD Graphics', 'Intel?? HD Graphics 620 (up to 2.07 GB)', 'intel 620'],
         4:['Integrated', 'integrated intel hd graphics', 'integrated AMD Radeon R5 Graphics', 'Integrated Graphics', 'Integrated intel hd graphics'],
         5:[515, 4, 'FirePro W4190M', 'NONE', 'PC', 'na', 'AMD'],
+    }
+    """
+    graphic_label={
+        0:['NVIDIA GeForce GTX 1050', 'NVIDIA GeForce GTX 1050 Ti', 'GTX 1050 Ti', 'NVIDIA GeForce GTX 1060', 'NVIDIA GeForce GTX 1070', '4GB GDDR5 NVIDIA GeForce GTX 1050', 'GTX 1050', 'NVIDIA GeForce 940MX'],
+        1:['AMD Radeon R2', 'AMD Radeon R4', 'radeon r5', 'AMD Radeon R5 Graphics', 'AMD Radeon R7'],
+        2:['Intel UHD Graphics 620', 'Intel Iris Plus Graphics 640', 'Intel HD Graphics 3000', 'Intel', 'Intel HD 620 graphics', 'Intel HD Graphics 500', 'Intel HD Graphics 520', 'Intel HD Graphics 620', 'Intel HD Graphics 400', 'Intel Celeron', 'Intel HD Graphics 505', 'Intel HD Graphics 5500', 'Intel HD Graphics', 'Intel?? HD Graphics 620 (up to 2.07 GB)', 'intel 620'],
+        3:['Integrated', 'integrated intel hd graphics', 'integrated AMD Radeon R5 Graphics', 'Integrated Graphics', 'Integrated intel hd graphics'],
+        4:[515, 4, 'FirePro W4190M', 'NONE', 'PC', 'na', 'AMD'],
     }
     review_graphic_label=[]
     indexes=review_file.index
@@ -123,6 +132,7 @@ if __name__ == '__main__':
         writer.writerows(review_screen_label)
 
     #cpu label mapping
+    """
     cpu_label={
         0:['4 GHz Intel Core i7'],
         1:['3.8 GHz Intel Core i7', '3.8 GHz Core i7 Family', '3.5 GHz Intel Core i7'],
@@ -131,6 +141,13 @@ if __name__ == '__main__':
         4:['2.2 GHz Intel Core i5', '2.3 GHz Intel Core i5', '2.6 GHz Intel Core i5', '2.5 GHz Intel Core i5', '2.5 GHz Core i5 7200U', 'Intel Core i5'],
         5:['2 GHz None', '2 GHz AMD A Series', '2.7 GHz Intel Core i3', '2.5 GHz Pentium', '2.5 GHz AMD A Series', '2.16 GHz Intel Celeron', '2.16 GHz Athlon 2650e', '2.7 GHz 8032', '2.48 GHz Intel Celeron', '2.4 GHz AMD A Series', '2 GHz Celeron D Processor 360', '2.4 GHz Intel Core i3', '2.3 GHz Intel Core i3', '2.4 GHz Core i3-540', '2.5 GHz Intel Core Duo', '2.2 GHz Intel Core i3', '2.7 GHz AMD A Series', '2.8 GHz 8032', '2.5 GHz Athlon 2650e', '2.9 GHz Intel Celeron', '2 GB', 'Celeron N3060'],
         6:['1.5 GHz', '1.8 GHz 8032', '1.8 GHz AMD E Series', '1.7 GHz', '1.1 GHz Intel Celeron', '1.6 GHz Intel Celeron', '1.6 GHz Intel Core 2 Duo', '1.7 GHz Exynos 5000 Series', '1.6 GHz Celeron N3060', '1.6 GHz AMD E Series', '1.1 GHz Pentium', '1.6 GHz', '1.6 GHz Intel Mobile CPU', '1.6 GHz Celeron N3050', '1.8 GHz Intel Core i7', '1.6 GHz Intel Core i5', 8032],
+    }
+    """
+    cpu_label={
+        0:['4 GHz Intel Core i7'],
+        1:['3.8 GHz Intel Core i7', '3.8 GHz Core i7 Family', '3.5 GHz Intel Core i7', '3 GHz 8032', '3.5 GHz 8032', '3 GHz AMD A Series', '3.1 GHz Intel Core i5', '3.4 GHz Intel Core i5', '3.6 GHz AMD A Series', '3.5 GHz Intel Core i5', '3 GHz'],
+        2:['2.8 GHz Intel Core i7', '2.7 GHz Core i7 7500U', '2.7 GHz Core i7 2.7 GHz', '2.7 GHz Intel Core i7', '2.1 GHz Intel Core i7', '2.2 GHz Intel Core i5', '2.3 GHz Intel Core i5', '2.6 GHz Intel Core i5', '2.5 GHz Intel Core i5', '2.5 GHz Core i5 7200U', 'Intel Core i5', '2 GHz None', '2 GHz AMD A Series', '2.7 GHz Intel Core i3', '2.5 GHz Pentium', '2.5 GHz AMD A Series', '2.16 GHz Intel Celeron', '2.16 GHz Athlon 2650e', '2.7 GHz 8032', '2.48 GHz Intel Celeron', '2.4 GHz AMD A Series', '2 GHz Celeron D Processor 360', '2.4 GHz Intel Core i3', '2.3 GHz Intel Core i3', '2.4 GHz Core i3-540', '2.5 GHz Intel Core Duo', '2.2 GHz Intel Core i3', '2.7 GHz AMD A Series', '2.8 GHz 8032', '2.5 GHz Athlon 2650e', '2.9 GHz Intel Celeron', '2 GB', 'Celeron N3060'],
+        3:['1.5 GHz', '1.8 GHz 8032', '1.8 GHz AMD E Series', '1.7 GHz', '1.1 GHz Intel Celeron', '1.6 GHz Intel Celeron', '1.6 GHz Intel Core 2 Duo', '1.7 GHz Exynos 5000 Series', '1.6 GHz Celeron N3060', '1.6 GHz AMD E Series', '1.1 GHz Pentium', '1.6 GHz', '1.6 GHz Intel Mobile CPU', '1.6 GHz Celeron N3050', '1.8 GHz Intel Core i7', '1.6 GHz Intel Core i5', 8032],
     }
     review_cpu_label=[]
     indexes=review_file.index
