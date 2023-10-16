@@ -1,1 +1,1 @@
-# AutoConfigurator
+# Prompt Ensemble Configurator
